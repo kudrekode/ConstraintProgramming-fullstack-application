@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chord Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Load SVGuitar script -->
+    <script src="https://omnibrain.github.io/svguitar/js/svguitar.umd.js"></script>
+
+</head>
+
+<body>
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+
+    <div class="header-container">
+        <header>
+        <h1>Guitar Chord Generator</h1>
+        <!-- <h1 class="animated-title">Guitar Chord Generator</h1> -->
+        </header>
+        <button class="help-button" onclick="openForm()">Help</button>
+    </div>  
+
+    <div class="form-popup" id="myForm">
+        <div class="form-container">
+            <div class="popup-header">
+                <h1>Help Page</h1>
+                <button class="close-help" onclick="closeForm()">X</button>
+            </div>
+                <p>
+                    Thank you for choosing to participate in my survey.
+                    I am evaluating this prototype software that aims to helps users 
+                    learn to play the guitar given user enforced constraints.
+                </p>
+                <p>To fully participate in the survey, feel free to use this software
+                    as you wish. However, to move to the survey questions you must complete 
+                    four tasks which are tracked in bottom right of the page.
+                </p>
+                <p>Once you complete these tasks you will be able to press the "complete 
+                    survey" button which will take you to the questions.
+                </p>
+
+                <h3>General Instructions:</h3>
+                <p>- Choose a Roote Note from the drop down menu (E.g, 'A')
+                </p>
+                <p>- Choose a Chord Type from the drop down menu (E.g, 'Maj')
+                </p>
+                <p>- Opt into allowing muted strings with the toggle
+                </p>
+                <p>- Increase or decrease your hand span (number corresponds to difference
+                    between highest and lowest fret in a chord)
+                </p>
+                <p>- Generate a chord with "Generate New Chord"
+                </p>
+                <p>- Generate a new position for the same chord using "New Position"
+                </p>
+                <p>- Change the fingering suggestion for that chord using "New Fingers"
+                </p>
+                <p>- You can select which fingers you want to include or exclude from the solution
+                </p>
+                <p>- You can also change the orientation of the tablature (left or right handed)
+                </p>
+                <p>- On the tablature, 'X' refers to a muted string and blank circles on the top refer to open strings
+                </p>
+                <p>- If no solutions are generated, change some parameters to find new ones.
+                </p>
+                <p> Feel free to close this help box and press "help" again if you need to refer to this page</p>
+            </div>
+    </div>
+
+    <!-- Timeout Modal -->
+    <div id="timeoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTimeoutModal()">&times;</span>
+            <p>This is taking too long. Would you like to continue waiting or stop the search?</p>
+            <button onclick="continueSearch()">Continue</button>
+            <button onclick="stopSearch()">Stop</button>
+        </div>
+    </div>
+
+    <!-- No More Solutions Modal -->
+    <div id="noMoreSolutionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeNoMoreSolutionsModal()">&times;</span>
+            <p>No more solutions found.</p>
+            <button onclick="closeNoMoreSolutionsModal()">Close</button>
+        </div>
+    </div>
+
+    
+
+        <div class="top-elements">
+            <div class="left-top-elements">
+            <form id="chordForm">
+                <label for="root_note">Root Note:</label>
+                <select id="root_note" name="root_note" required>
+                    <option value="C">C</option>
+                    <option value="C#">C#</option>
+                    <option value="D">D</option>
+                    <option value="D#">D#</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="F#">F#</option>
+                    <option value="G">G</option>
+                    <option value="G#">G#</option>
+                    <option value="A">A</option>
+                    <option value="A#">A#</option>
+                    <option value="B">B</option>
+                </select>
+
+                <!-- <input type="text" id="root_note" name="root_note" required> -->
+                <!-- <br><br> -->
+                <label for="chord_type">Chord Type:</label>
+                <select id="chord_type" name="chord_type" required>
+                    <option value="major">Major</option>
+                    <option value="major6">Major6</option>
+                    <option value="major6/9">Major6/9</option>
+                    <option value="major7">Major7</option>
+                    <option value="major9">Major9</option>
+                    <option value="major11">Major11</option>
+                    
+                    <option value="minor">Minor</option>
+                    <option value="minor6">Minor6</option>
+                    <option value="minor6/9">Minor6/9</option>
+                    <option value="minor7">Minor7</option>
+                    <option value="minor9">Minor9</option>
+                    <option value="minor11">Minor11</option>
+
+                    <option value="minmaj7">MinMaj7</option>
+
+                    <option value="dom7">Dom7</option>
+                    <option value="dom9">Dom9</option>
+                    <option value="dom11">Dom11</option>
+                    
+                    <option value="dim">Dim</option>
+                    <option value="dim7">Dim7</option>
+                    <option value="halfdim">Half Dim</option>
+
+                    <option value="aug">Aug</option>
+                    <option value="aug7">Aug7</option>
+
+                    <option value="sus2">Sus2</option>
+                    <option value="sus4">Sus4</option>
+                    <option value="7sus4">7Sus4</option> 
+                    <!-- doesnt work as a chord  -->
+
+                    <option value="add9">Add9</option>
+                    <option value="add11">Add11</option>
+
+                </select>
+
+                <!-- <input type="text" id="chord_type" name="chord_type" required> -->
+                
+                <label for="allow_muted_strings">Mute strings:</label>
+                <label class="switch muted"> 
+                    <input type="checkbox" id="allow_muted_strings" name="allow_muted_strings">
+                    <span class="slider round muted"></span>
+                </label>
+
+                <label for="max_fret_diff">Current Finger Span: <span id="handspan_value"></span></p></label>
+                <div class="slidercontainer handspan">
+                    
+                    <input type="range" min="2" max="8" value="3" class="slider handspan" id="max_fret_diff">
+                </div>
+
+                <!-- need to add some below maybe or dynamic box flex girdding better at 70% vw -->
+
+                <div class="finger-toggles">
+                    <div class="finger-toggle">
+                        <input type="checkbox" id="index" name="finger" value="index" checked>
+                        <label for="index">Index</label>
+                    </div>
+                    <div class="finger-toggle">
+                        <input type="checkbox" id="middle" name="finger" value="middle" checked>
+                        <label for="middle">Middle</label>
+                    </div>
+                    <div class="finger-toggle">
+                        <input type="checkbox" id="ring" name="finger" value="ring" checked>
+                        <label for="ring">Ring</label>
+                    </div>
+                    <div class="finger-toggle">
+                        <input type="checkbox" id="pinky" name="finger" value="pinky" checked>
+                        <label for="pinky">Pinky</label>
+                    </div>
+                </div>
+
+                <div class="hand-switch">
+                    <label class="switch hand"> 
+                        <input type="checkbox" id="hand-switch" name="hand-switch">
+                        <span class="slider hand round">
+                            <span class="switch-label" id="switch-label"></span>
+                        </span>
+                    </label>
+                    <label for="hand-switch">Orientation</label>
+                </div>
+                
+                
+
+            </div>
+
+            <div class="right-top-elements">
+                <button id="newchord" type="submit">Generate New Chord</button>
+                <button id="newposition" type="submit">New Position</button>
+                <button id="newfingers" type="submit">New Fingers</button>
+
+            </div>
+        </form>
+
+            <!-- </form> -->
+        </div>
+
+        <div class ="fretimage-container">
+        <div class ="fretimage" id="fretimage"></div>
+    </div>
+        <!-- <pre id="result"></pre> -->
+
+    <!-- <pre id="result"></pre> -->
+
+    <div id="progress-container">
+        <h4>Survey Completion Tracker:</h4>
+        <div>
+            <input type="checkbox" id="uniqueChordCheckbox" disabled>
+            <label for="uniqueChordCheckbox">Generate three unique chords</label>
+        </div>
+        <div>
+            <input type="checkbox" id="newTabCheckbox" disabled>
+            <label for="newTabCheckbox">Generate new tablature position</label>
+        </div>
+        <div>
+            <input type="checkbox" id="newFingeringCheckbox" disabled>
+            <label for="newFingeringCheckbox">Generate new finger positions</label>
+        </div>
+        <div>
+            <input type="checkbox" id="customizationCheckbox" disabled>
+            <label for="customizationCheckbox">Use one customization tool</label>
+        </div>
+        <button id="nextPageButton" disabled onclick="goToNextPage()">Complete Survey</button>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
+

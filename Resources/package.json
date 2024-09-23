@@ -1,0 +1,14 @@
+{
+  "name": "chord-gen",
+  "version": "1.0.0",
+  "description": "full stack chord gen npm init",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "svguitar": "^2.2.2"
+  }
+}
